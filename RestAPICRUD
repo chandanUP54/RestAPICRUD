@@ -1,0 +1,136 @@
+*******************************
+Main Java file 
+********************************
+package com.example.CRUDAPI;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class CrudapiApplication {
+	public static void main(String[] args) {
+		SpringApplication.run(CrudapiApplication.class, args);
+	}
+
+}
+
+********************************
+1) HomeController 
+*******************************
+package com.example.CRUDAPI.controller;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.CRUDAPI.entity.Student;
+import com.example.CRUDAPI.repository.StudentRepository;
+
+@RestController
+public class HomeController {
+
+@Autowired
+private	StudentRepository studentRepository;
+// CRUD - C=create , R=Read , U=Update , D=delete
+	@GetMapping("/")
+	public String hello() {
+		return "hello";
+	}
+	
+	@GetMapping(path = "/students/{rollNo}")
+	public Student getOne(@PathVariable int rollNo ) {
+		Student student=studentRepository.findById(rollNo).get();
+		return student;
+	}
+	// create a student info  -->> C
+	@PostMapping(path ="/students")
+	public Student addStudent(@RequestBody Student student) {
+		studentRepository.save(student);
+		return student;
+	}
+	//get all list of students -->> R
+		@GetMapping(path ="/students")
+		public List<Student> getAll(){
+		List<Student> studentList=studentRepository.findAll();
+				//return this.studentRepository.findAll();
+			return studentList;
+		}
+		
+	//update a student info -->> U
+	@PutMapping("/students")
+	public Student updatStudent(@RequestBody Student student) {
+		studentRepository.save(student);
+		return student;
+	}
+	//delete one student  -->> D
+	@DeleteMapping(path ="/students/{rollNo}")
+  public ResponseEntity<HttpStatus> deleteStudent(@PathVariable int rollNo) {
+		try {
+	 Student entity =studentRepository.findById(rollNo).get();
+	    studentRepository.delete(entity);
+	 return new ResponseEntity<HttpStatus>(HttpStatus.OK);
+		}
+		catch (Exception e) {
+			return new ResponseEntity<HttpStatus>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+  }
+}
+*****************************************
+2)entity 
+********************************************
+package com.example.CRUDAPI.entity;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
+@Entity
+public class Student {
+
+	@Id
+	private int rollNo;
+	private String name;
+	private String address;
+
+create constructor using field
+create constructor using super class
+create getter and setter (select all)
+create toString 
+
+************************************************
+3)StudentRepository
+**************************************************
+package com.example.CRUDAPI.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.example.CRUDAPI.entity.Student;
+
+@Repository
+public interface StudentRepository extends JpaRepository<Student, Integer> {
+
+}
+*************************************************
+4) application.property
+*****************************************************
+server.port=8085
+
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.datasource.url=jdbc:mysql://localhost:3306/hero
+spring.datasource.username=root
+spring.datasource.password=admin
+spring.jpa.show-sql=true
+spring.jpa.hibernate.ddl-auto=update
+
+*****************************************************
+5)
+********************************************************
